@@ -40,11 +40,39 @@ LongInt & LongInt::operator=(int num)
 }
 
 
+LongInt & LongInt::operator++() { return (*this) += 1; }
+LongInt & LongInt::operator--() { return (*this) -= 1; }
+
+
+LongInt LongInt::operator++(int num) 
+{
+    LongInt ret = (*this); 
+    ++(*this);
+    return ret;
+}
+
+
+LongInt LongInt::operator--(int num) 
+{
+    LongInt ret = (*this);
+    --(*this);
+    return ret;
+}
+
+
 LongInt LongInt::operator-() const {
     LongInt ret; 
     ret.digits_ = digits_;
     ret.neg_ = !neg_;
 
+    return ret;
+}
+
+
+LongInt LongInt::pos() const 
+{
+    LongInt ret = (*this);
+    ret.neg_ = false;
     return ret;
 }
 
@@ -186,6 +214,54 @@ LongInt LongInt::operator+(const LongInt & num) const
 
 LongInt LongInt::operator-(const LongInt & num) const
 { return LongInt(*this) -= num; }
+
+
+LongInt LongInt::slow_mult(const LongInt & num) const 
+{
+    LongInt ret = (*this).pos();
+    for (LongInt i = 1; i < num.pos(); ++i) {
+        ret += (*this).pos(); 
+    }
+
+    if (neg_ != num.neg_) { ret.neg_ = true; }
+    return ret;
+}
+
+
+LongInt LongInt::colm_mult(const LongInt & num) const 
+{
+    // Hacky looking but effectively correct
+    LongInt multiplicand = (*this).pos();
+    LongInt multiplier = num.pos();
+
+    LongInt ret;
+    for (int i = 0; i < multiplier.digits_.size(); ++i) {
+        LongInt sum;
+        for (int k = 0; k < i; ++k) { sum.digits_.push_back(0); }
+
+        int carry = 0;
+        for (int j = 0; j < multiplicand.digits_.size(); ++j) {
+            int digit = multiplicand.digits_[i] * multiplier.digits_[j] + carry;
+            if (digit >= 10) {
+                carry = digit / 10;
+                digit %= 10;
+            }
+
+            // Hack to fix a bug
+            if (j == 0) {
+                sum.digits_[0] = digit;
+            } else {
+                sum.digits_.push_back(digit);
+            }
+        }
+        if (carry != 0) sum.digits_.push_back(carry);
+        ret += sum;
+    }
+    
+    if (neg_ != num.neg_) { ret.neg_ = true; }
+
+    return ret;
+}
 
 
 LongInt & LongInt::operator+=(int num) { return (*this) += LongInt(num); }

@@ -14,12 +14,21 @@ public:
     LongInt & operator=(const LongInt & num);
     LongInt & operator=(int num);
 
+    LongInt & operator++();
+    LongInt & operator--();
+    LongInt operator++(int num);
+    LongInt operator--(int num);
+
     LongInt operator-() const;
+    LongInt pos() const;
 
     LongInt & operator+=(const LongInt & num);
     LongInt & operator-=(const LongInt & num);
     LongInt operator+(const LongInt & num) const;
     LongInt operator-(const LongInt & num) const;
+
+    LongInt slow_mult(const LongInt & num) const; // Addition looping
+    LongInt colm_mult(const LongInt & num) const; // HS Multiplation
 
     LongInt & operator+=(int num);
     LongInt & operator-=(int num);

@@ -107,5 +107,19 @@ int main() {
             std::cout << (a - b) << " " << a << std::endl;
             break;
         }
+        case 13:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a.slow_mult(b)) << std::endl;
+            break;
+        }
+        case 14:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a.colm_mult(b)) << std::endl;
+            break;
+        }
     }
 }
