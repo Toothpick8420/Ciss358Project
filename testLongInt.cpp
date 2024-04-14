@@ -49,5 +49,63 @@ int main() {
             std::cout << a << (a != b ? " != " : " == ") << b << std::endl;
             break;
         }
+        case 5: 
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << a << (a < b ? " < " : " !< ") << b << std::endl;
+            break;
+        }
+        case 6: 
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << a << (a <= b ? " <= " : " !<= ") << b << std::endl;
+            break;
+        }
+        case 7:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << a << (a > b ? " > " : " !> ") << b << std::endl;
+            break;
+        }
+        case 8:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << a << (a >= b ? " >= " : " !>= ") << b << std::endl;
+            break;
+        }
+        case 9:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            a += b;
+            std::cout << a << std::endl;
+            break;
+        }
+        case 10:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            a -= b;
+            std::cout << a << std::endl;
+            break;
+        }
+        case 11:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a + b) << " " << a << std::endl;
+            break;
+        } 
+        case 12:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a - b) << " " << a << std::endl;
+            break;
+        }
     }
 }
