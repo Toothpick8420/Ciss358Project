@@ -231,8 +231,16 @@ LongInt LongInt::slow_mult(const LongInt & num) const
 LongInt LongInt::colm_mult(const LongInt & num) const 
 {
     // Hacky looking but effectively correct
-    LongInt multiplicand = (*this).pos();
-    LongInt multiplier = num.pos();
+    LongInt multiplicand;
+    LongInt multiplier;
+
+    if ((*this) < num) {
+        multiplier = (*this).pos();
+        multiplicand = num.pos();
+    } else {
+        multiplier = num.pos();
+        multiplicand = (*this).pos();
+    }
 
     LongInt ret;
     for (int i = 0; i < multiplier.digits_.size(); ++i) {
@@ -241,15 +249,17 @@ LongInt LongInt::colm_mult(const LongInt & num) const
 
         int carry = 0;
         for (int j = 0; j < multiplicand.digits_.size(); ++j) {
-            int digit = multiplicand.digits_[i] * multiplier.digits_[j] + carry;
+            int digit = multiplicand.digits_[j] * multiplier.digits_[i] + carry;
             if (digit >= 10) {
                 carry = digit / 10;
                 digit %= 10;
+            } else {
+                carry = 0;
             }
 
             // Hack to fix a bug
             if (j == 0) {
-                sum.digits_[0] = digit;
+                sum.digits_[i] = digit;
             } else {
                 sum.digits_.push_back(digit);
             }
