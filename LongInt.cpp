@@ -12,8 +12,7 @@ LongInt::LongInt(int num)
         num = (num >= 0 ? num : -num);
         // Taking the LSD putting it in the array then removing it from the number
         // and repeating
-        while (num != 0) 
-        {
+        while (num != 0) {
             int digit = num % 10; 
             digits_.push_back(digit);
             num /= 10;
@@ -21,6 +20,10 @@ LongInt::LongInt(int num)
     }
 
 }
+
+
+LongInt::LongInt(std::vector<int> digits, bool neg) 
+    : digits_(digits), neg_(neg) {}
 
 
 LongInt & LongInt::operator=(const LongInt & num) 
@@ -34,10 +37,7 @@ LongInt & LongInt::operator=(const LongInt & num)
 }
 
 
-LongInt & LongInt::operator=(int num) 
-{
-    return (*this) = LongInt(num);
-}
+LongInt & LongInt::operator=(int num) { return (*this) = LongInt(num); }
 
 
 LongInt & LongInt::operator++() { return (*this) += 1; }
@@ -88,16 +88,12 @@ LongInt & LongInt::operator+=(const LongInt & num)
   
 
     bool carry = 0;
-    for (int i = 0; i < max_idx; ++i) 
-    {
+    for (int i = 0; i < max_idx; ++i) {
         int digit = digits_[i] + num.digits_[i] + carry;
-        if (digit >= 10) 
-        {
+        if (digit >= 10) {
             carry = 1;
             digits_[i] = digit - 10;
-        } 
-        else 
-        {
+        } else {
             carry = 0;
             digits_[i] = digit;
         }
@@ -111,9 +107,7 @@ LongInt & LongInt::operator+=(const LongInt & num)
             if (digit >= 10) {
                 carry = 1;
                 digits_.push_back(digit-10);
-            }
-            else 
-            {
+            } else {
                 carry = 0;
                 digits_.push_back(digit);
             }
@@ -224,6 +218,7 @@ LongInt LongInt::slow_mult(const LongInt & num) const
     }
 
     if (neg_ != num.neg_) { ret.neg_ = true; }
+    else { ret.neg_ = false; }
     return ret;
 }
 
@@ -234,13 +229,14 @@ LongInt LongInt::colm_mult(const LongInt & num) const
     LongInt multiplicand;
     LongInt multiplier;
 
-    if ((*this) < num) {
+    if ((*this).digits_.size() < num.digits_.size()) {
         multiplier = (*this).pos();
         multiplicand = num.pos();
     } else {
         multiplier = num.pos();
         multiplicand = (*this).pos();
     }
+
 
     LongInt ret;
     for (int i = 0; i < multiplier.digits_.size(); ++i) {
@@ -269,9 +265,67 @@ LongInt LongInt::colm_mult(const LongInt & num) const
     }
     
     if (neg_ != num.neg_) { ret.neg_ = true; }
+    else { ret.neg_ = false; }
 
     return ret;
 }
+
+
+LongInt LongInt::karatsuba(const LongInt & num) const
+{
+    if (digits_.size() == 1 || num.digits_.size() == 1) {
+        return colm_mult(num);
+    }
+
+    if (num == 0) return 0;
+    
+    LongInt rh(num);
+    LongInt lh(*this);
+
+    // Make them the same size
+    if (digits_.size() < rh.digits_.size()) {
+        lh.add_leading_zeros(rh.digits_.size() - lh.digits_.size());
+    } else {
+        rh.add_leading_zeros(lh.digits_.size() - rh.digits_.size());
+    }
+
+    int mid = lh.digits_.size() / 2; 
+
+    // Splitting the numbers up
+    std::vector<int> Xl, Xr;
+    std::vector<int> Yl, Yr;
+    for (int i = 0; i < mid; ++i) {
+        Xr.push_back(lh.digits_[i]);
+        Yr.push_back(rh.digits_[i]);
+    } 
+    LongInt xR(Xr);
+    LongInt yR(Yr);
+
+    for (int i = mid; i < lh.digits_.size(); ++i) {
+        Xl.push_back(lh.digits_[i]);
+        Yl.push_back(rh.digits_[i]);
+    }
+    LongInt xL(Xl);
+    LongInt yL(Yl);
+
+    LongInt t1 = LongInt(Xl).karatsuba(LongInt(Yl));
+    LongInt t2 = LongInt(Xr).karatsuba(LongInt(Yr));
+    LongInt t3 = (LongInt(Xl) + LongInt(Xr)).karatsuba((LongInt(Yl) + LongInt(Yr))) 
+        - t1 - t2;
+
+
+    LongInt ret = t1.insert_trailing_zeros((mid * 2)) + t3.insert_trailing_zeros(mid) +
+            t2;
+
+    ret.remove_leading_zeros();
+
+    if (neg_ != num.neg_) { 
+        ret.neg_ = true;
+    }
+
+    return ret;
+}
+
 
 
 LongInt & LongInt::operator+=(int num) { return (*this) += LongInt(num); }
@@ -360,10 +414,36 @@ bool LongInt::operator>=(int num) const { return (*this) >= LongInt(num); }
 void LongInt::remove_leading_zeros() 
 {
     std::vector<int>::iterator it = digits_.end() - 1;
-    while ((*it) == 0) {
+    while ((*it) == 0 && it != digits_.begin()) {
         digits_.erase(it);
         it = digits_.end() - 1;
     }
+}
+
+
+void LongInt::add_leading_zeros(int num) 
+{
+    for (int i = 0; i < num; ++i) {
+        digits_.push_back(0);  
+    }
+}
+
+
+LongInt & LongInt::insert_trailing_zeros(int num) 
+{
+    std::vector<int> new_digits; 
+    for (int i = 0; i < num; ++i) { 
+        new_digits.push_back(0);
+    }
+
+
+    for (int i = 0; i < digits_.size(); ++i) {
+        new_digits.push_back(digits_[i]);
+    }
+
+    digits_ = new_digits;
+
+    return (*this);
 }
 
 
@@ -371,8 +451,7 @@ std::ostream & operator<<(std::ostream & os, const LongInt & num)
 {
     if (num.neg_) { os << "-"; }
     
-    for (int i = num.digits_.size() - 1; i >= 0; --i) 
-    {
+    for (int i = num.digits_.size() - 1; i >= 0; --i) {
         os << num.digits_[i];
     }
 
@@ -392,7 +471,7 @@ std::istream & operator>>(std::istream & is, LongInt & num)
     for (int i = input.size() - 1; i >= start_idx; --i) 
     {
         // 48 is the offset of ascii numbers to 0 i.e "0" = 48
-        num.digits_.push_back(input[i] - 48);
+        num.digits_.push_back(input[i] - '0');
     }
 
     return is;

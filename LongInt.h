@@ -10,6 +10,7 @@ class LongInt
 {
 public:
     LongInt(int num = 0);
+    LongInt(std::vector<int> num, bool neg=false);
 
     LongInt & operator=(const LongInt & num);
     LongInt & operator=(int num);
@@ -29,6 +30,8 @@ public:
 
     LongInt slow_mult(const LongInt & num) const; // Addition looping
     LongInt colm_mult(const LongInt & num) const; // HS Multiplation
+    LongInt karatsuba(const LongInt & num) const;       // Karatsuba Multiplication
+
 
     LongInt & operator+=(int num);
     LongInt & operator-=(int num);
@@ -55,7 +58,9 @@ public:
     friend
     std::istream & operator>>(std::istream & is, LongInt & num);
 private:
-    void remove_leading_zeros();
+    void remove_leading_zeros();         // 0001 -> 1
+    void add_leading_zeros(int num);
+    LongInt & insert_trailing_zeros(int num); // Essentially multiplying by 10 
 
     std::vector<int> digits_;
     bool neg_;

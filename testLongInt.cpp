@@ -121,5 +121,15 @@ int main() {
             std::cout << (a.colm_mult(b)) << std::endl;
             break;
         }
+        case 15:
+        {
+            LongInt a, b, c, d;
+            std::cin >> a >> b;
+            std::cout << std::endl;
+            std::cout << (c = a.karatsuba(b)) << std::endl << std::endl;
+            std::cout << (d = a.colm_mult(b)) << std::endl << std::endl;
+            std::cout << (c == d ? "a == b" : "a != b") << std::endl;
+            break;
+        }
     }
 }
