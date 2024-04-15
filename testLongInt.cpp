@@ -131,5 +131,33 @@ int main() {
             std::cout << (c == d ? "a == b" : "a != b") << std::endl;
             break;
         }
+        case 16:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a.slow_div(b)) << std::endl;
+            break;
+        }
+        case 17:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a % b) << std::endl;
+            break;
+        }
+        case 18:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a /= b) << std::endl;
+            break;
+        }
+        case 19:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a %= b) << std::endl;
+            break;
+        }
     }
 }

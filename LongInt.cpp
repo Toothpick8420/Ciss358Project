@@ -202,12 +202,30 @@ LongInt & LongInt::operator-=(const LongInt & num)
 }
 
 
-LongInt LongInt::operator+(const LongInt & num) const
-{ return LongInt(*this) += num; }
+LongInt & LongInt::operator*=(const LongInt & num) { return (*this) = karatsuba(num); }
+LongInt & LongInt::operator/=(const LongInt & num) { return (*this) = slow_div(num); }
+LongInt & LongInt::operator%=(const LongInt & num) { return (*this) = (*this) - ((*this) / num) * num; }
 
 
-LongInt LongInt::operator-(const LongInt & num) const
-{ return LongInt(*this) -= num; }
+LongInt LongInt::operator+(const LongInt & num) const { return LongInt(*this) += num; }
+LongInt LongInt::operator-(const LongInt & num) const { return LongInt(*this) -= num; }
+LongInt LongInt::operator*(const LongInt & num) const { return karatsuba(num); }
+LongInt LongInt::operator/(const LongInt & num) const { return LongInt(*this) /= num; }
+LongInt LongInt::operator%(const LongInt & num) const { return LongInt(*this) %= num; }
+
+
+LongInt & LongInt::operator+=(int num) { return (*this) += LongInt(num); }
+LongInt & LongInt::operator-=(int num) { return (*this) -= LongInt(num); }
+LongInt & LongInt::operator*=(int num) { return (*this) *= LongInt(num); }
+LongInt & LongInt::operator/=(int num) { return (*this) /= LongInt(num); }
+LongInt & LongInt::operator%=(int num) { return (*this) %= LongInt(num); }
+
+
+LongInt LongInt::operator+(int num) const { return (*this) + LongInt(num); }
+LongInt LongInt::operator-(int num) const { return (*this) - LongInt(num); }
+LongInt LongInt::operator*(int num) const { return (*this) * LongInt(num); }
+LongInt LongInt::operator/(int num) const { return (*this) / LongInt(num); }
+LongInt LongInt::operator%(int num) const { return (*this) % LongInt(num); }
 
 
 LongInt LongInt::slow_mult(const LongInt & num) const 
@@ -327,11 +345,19 @@ LongInt LongInt::karatsuba(const LongInt & num) const
 }
 
 
+LongInt LongInt::slow_div(const LongInt & num) const 
+{
+    LongInt ret;
 
-LongInt & LongInt::operator+=(int num) { return (*this) += LongInt(num); }
-LongInt & LongInt::operator-=(int num) { return (*this) -= LongInt(num); }
-LongInt LongInt::operator+(int num) const { return (*this) + LongInt(num); }
-LongInt LongInt::operator-(int num) const { return (*this) - LongInt(num); }
+    LongInt dividend = (*this).pos();
+    LongInt divisor = (num).pos();
+    while ((dividend - divisor) >= 0) {
+        dividend -= divisor;
+        ++ret;
+    }
+
+    return ret;
+}
 
 
 bool LongInt::operator==(const LongInt & num) const 
@@ -445,6 +471,21 @@ LongInt & LongInt::insert_trailing_zeros(int num)
 
     return (*this);
 }
+
+
+LongInt operator+(int a, const LongInt & b) { return LongInt(a) + b; }
+LongInt operator-(int a, const LongInt & b) { return LongInt(a) - b; }
+LongInt operator*(int a, const LongInt & b) { return LongInt(a) * b; }
+LongInt operator/(int a, const LongInt & b) { return LongInt(a) / b; }
+LongInt operator%(int a, const LongInt & b) { return LongInt(a) % b; }
+
+
+bool operator==(int num, const LongInt & b) { return LongInt(num) == b; }
+bool operator!=(int num, const LongInt & b) { return LongInt(num) != b; }
+bool operator< (int num, const LongInt & b) { return LongInt(num) <  b; }
+bool operator<=(int num, const LongInt & b) { return LongInt(num) <= b; }
+bool operator> (int num, const LongInt & b) { return LongInt(num) >  b; }
+bool operator>=(int num, const LongInt & b) { return LongInt(num) >= b; }
 
 
 std::ostream & operator<<(std::ostream & os, const LongInt & num)
