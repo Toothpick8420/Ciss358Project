@@ -203,7 +203,7 @@ LongInt & LongInt::operator-=(const LongInt & num)
 
 
 LongInt & LongInt::operator*=(const LongInt & num) { return (*this) = karatsuba(num); }
-LongInt & LongInt::operator/=(const LongInt & num) { return (*this) = slow_div(num); }
+LongInt & LongInt::operator/=(const LongInt & num) { return (*this) = fast_div(num); }
 LongInt & LongInt::operator%=(const LongInt & num) { return (*this) = (*this) - ((*this) / num) * num; }
 
 
