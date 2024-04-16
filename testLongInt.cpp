@@ -159,5 +159,28 @@ int main() {
             std::cout << (a %= b) << std::endl;
             break;
         }
+        case 20:
+        {
+            LongInt a;
+            unsigned int b;
+            std::cin >> a >> b;
+            std::cout << (a.shift_left(b)) << std::endl;
+            break;
+        }
+        case 21:
+        {
+            LongInt a;
+            unsigned int b;
+            std::cin >> a >> b;
+            std::cout << (a.shift_right(b)) << std::endl;
+            break;
+        }
+        case 22:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a.fast_div(b)) << std::endl;
+            break;
+        }
     }
 }

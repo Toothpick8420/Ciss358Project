@@ -52,8 +52,11 @@ public:
     LongInt slow_mult(const LongInt & num) const; // Addition looping
     LongInt colm_mult(const LongInt & num) const; // HS Multiplation
     LongInt karatsuba(const LongInt & num) const; // Karatsuba Multiplication
+    LongInt shift_left(const unsigned int & num) const;
 
     LongInt slow_div(const LongInt & num) const;
+    LongInt fast_div(const LongInt & num) const;
+    LongInt shift_right(const unsigned int & num) const;
 
     bool operator==(const LongInt & num) const;
     bool operator!=(const LongInt & num) const;

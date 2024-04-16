@@ -240,13 +240,13 @@ LongInt LongInt::slow_mult(const LongInt & num) const
     return ret;
 }
 
-
 LongInt LongInt::colm_mult(const LongInt & num) const 
 {
     // Hacky looking but effectively correct
     LongInt multiplicand;
     LongInt multiplier;
 
+    //larger becomes the multiplicand, smaller the multiplier
     if ((*this).digits_.size() < num.digits_.size()) {
         multiplier = (*this).pos();
         multiplicand = num.pos();
@@ -255,10 +255,10 @@ LongInt LongInt::colm_mult(const LongInt & num) const
         multiplicand = (*this).pos();
     }
 
-
     LongInt ret;
     for (int i = 0; i < multiplier.digits_.size(); ++i) {
         LongInt sum;
+        //making sum the right "offset" or power of 10
         for (int k = 0; k < i; ++k) { sum.digits_.push_back(0); }
 
         int carry = 0;
@@ -271,17 +271,23 @@ LongInt LongInt::colm_mult(const LongInt & num) const
                 carry = 0;
             }
 
-            // Hack to fix a bug
-            if (j == 0) {
-                sum.digits_[i] = digit;
-            } else {
-                sum.digits_.push_back(digit);
-            }
+            //Hack to fix a bug
+            if (j)
+               sum.digits_.push_back(digit);
+            else
+               sum.digits_[i] = digit;
+            // if (j == 0) {
+            //     sum.digits_[i] = digit;
+            // } else {
+            //     sum.digits_.push_back(digit);
+            //}
         }
         if (carry != 0) sum.digits_.push_back(carry);
         ret += sum;
     }
-    
+
+    //if both negative or positive, positive
+    //if differ, negative
     if (neg_ != num.neg_) { ret.neg_ = true; }
     else { ret.neg_ = false; }
 
@@ -345,6 +351,23 @@ LongInt LongInt::karatsuba(const LongInt & num) const
 }
 
 
+LongInt LongInt::shift_left(const unsigned int & num) const
+{
+    LongInt ret;
+    ret.digits_.clear();
+    for (unsigned int i = 0; i < num; ++i)
+    {
+        ret.digits_.push_back(0);
+    }
+    unsigned int s = digits_.size();
+    for (unsigned int i = 0; i < s; ++i)
+    {
+        ret.digits_.push_back(digits_[i]);
+    }
+    return ret;
+}
+
+
 LongInt LongInt::slow_div(const LongInt & num) const 
 {
     LongInt ret;
@@ -356,6 +379,45 @@ LongInt LongInt::slow_div(const LongInt & num) const
         ++ret;
     }
 
+    return ret;
+}
+
+
+LongInt LongInt::fast_div(const LongInt & num) const
+{
+    unsigned int offset = (*this).digits_.size()-num.digits_.size();
+    LongInt ret;
+    LongInt numerator = (*this).pos();
+    LongInt divisor = ((num).pos()).shift_left(offset);
+    LongInt i;
+    while (numerator - num >= 0)
+    {
+        while (divisor > numerator)
+        {
+            divisor = divisor.shift_right(1);
+            offset -= 1;
+        }
+        numerator -= divisor;
+        i.digits_.clear();
+        i.digits_.push_back(1);
+        i = i.shift_left(offset);
+        ret += i;
+    }
+    return ret;
+}
+
+
+LongInt LongInt::shift_right(const unsigned int & num) const
+{
+    LongInt ret;
+    unsigned int s = digits_.size();
+    ret.digits_.clear();
+    for (unsigned int i = num; i < s; ++i)
+    {
+        ret.digits_.push_back(digits_[i]);
+    }
+    if (ret.digits_.size() == 0)
+        ret.digits_.push_back(0);
     return ret;
 }
 
