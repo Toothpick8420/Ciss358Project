@@ -256,11 +256,14 @@ LongInt LongInt::colm_mult(const LongInt & num) const
     }
 
     LongInt ret;
+    ret.digits_.clear();
     for (int i = 0; i < multiplier.digits_.size(); ++i) {
         LongInt sum;
+        sum.digits_.clear();
         //making sum the right "offset" or power of 10
         for (int k = 0; k < i; ++k) { sum.digits_.push_back(0); }
 
+        //multiplies position, then computes carry for next position
         int carry = 0;
         for (int j = 0; j < multiplicand.digits_.size(); ++j) {
             int digit = multiplicand.digits_[j] * multiplier.digits_[i] + carry;
@@ -270,19 +273,11 @@ LongInt LongInt::colm_mult(const LongInt & num) const
             } else {
                 carry = 0;
             }
-
-            //Hack to fix a bug
-            if (j)
-               sum.digits_.push_back(digit);
-            else
-               sum.digits_[i] = digit;
-            // if (j == 0) {
-            //     sum.digits_[i] = digit;
-            // } else {
-            //     sum.digits_.push_back(digit);
-            //}
+            sum.digits_.push_back(digit);
         }
+        //last possible carry
         if (carry != 0) sum.digits_.push_back(carry);
+        
         ret += sum;
     }
 
@@ -379,6 +374,8 @@ LongInt LongInt::slow_div(const LongInt & num) const
         ++ret;
     }
 
+    if (neg_ != num.neg_) { ret.neg_ = true; }
+    else { ret.neg_ = false; }
     return ret;
 }
 
@@ -403,6 +400,8 @@ LongInt LongInt::fast_div(const LongInt & num) const
         i = i.shift_left(offset);
         ret += i;
     }
+    if (neg_ != num.neg_) { ret.neg_ = true; }
+    else { ret.neg_ = false; }
     return ret;
 }
 
