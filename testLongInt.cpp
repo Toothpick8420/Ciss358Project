@@ -6,8 +6,8 @@
 
 int main() {
 
-    int option;
-    std::cin >> option;
+    int option=0;
+    //std::cin >> option;
 
     switch (option) 
     {
@@ -180,6 +180,13 @@ int main() {
             LongInt a, b;
             std::cin >> a >> b;
             std::cout << (a.fast_div(b)) << std::endl;
+            break;
+        }
+        case 23:
+        {
+            std::string num;
+            std::cin >> num;
+            std::cout << (LongInt(num)) << std::endl;
             break;
         }
     }
