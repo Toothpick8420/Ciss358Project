@@ -5,7 +5,7 @@
 
 int main() 
 {
-    int option = 0;
+    int option = 2;
 //    std::cin >> option;
 
     switch (option) 
@@ -15,6 +15,21 @@ int main()
             Polynomial p;
             std::cin >> p;
             std::cout << p << std::endl;
+            break;
+        }
+        case 1:
+        {
+            Polynomial p, q;
+            std::cin >> p >> q;
+            std::cout << (p += q) << std::endl;
+            break;
+        }
+        case 2:
+        {
+            Polynomial p, q;
+            std::cin >> p >> q;
+            std::cout << (p -= q) << std::endl;
+            break;
         }
     }
 }

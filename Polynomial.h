@@ -17,8 +17,10 @@ class Polynomial
 public:
     Polynomial(std::string str="0");
 
-    Polynomial & operator+=(const Polynomial & poly);
+    Polynomial & operator+=(const Polynomial & poly); // Requires the terms be sorted
     Polynomial & operator-=(const Polynomial & poly);
+
+    void simplify();
 
     friend
     std::ostream & operator<<(std::ostream & os, const Polynomial & poly);
