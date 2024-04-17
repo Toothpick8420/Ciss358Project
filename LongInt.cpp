@@ -77,6 +77,9 @@ LongInt LongInt::pos() const
 }
 
 
+bool LongInt::is_negative() const { return neg_; }
+
+
 LongInt & LongInt::operator+=(const LongInt & num) 
 {
     if (neg_ != num.neg_) {

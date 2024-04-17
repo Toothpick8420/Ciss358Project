@@ -25,6 +25,9 @@ public:
     LongInt operator-() const;
     LongInt pos() const;
 
+
+    bool is_negative() const;
+
     LongInt & operator+=(const LongInt & num);
     LongInt & operator-=(const LongInt & num);
     LongInt & operator*=(const LongInt & num);    // is really just a = a.karatsuba(b) not faster
