@@ -55,11 +55,12 @@ public:
     LongInt slow_mult(const LongInt & num) const; // Addition looping
     LongInt colm_mult(const LongInt & num) const; // HS Multiplation
     LongInt karatsuba(const LongInt & num) const; // Karatsuba Multiplication
-    LongInt shift_left(const unsigned int & num) const;
+    void karatsuba(const LongInt & num, bool hi);
+    LongInt shift_left(const size_t & num) const;
 
     LongInt slow_div(const LongInt & num) const;
     LongInt fast_div(const LongInt & num) const;
-    LongInt shift_right(const unsigned int & num) const;
+    LongInt shift_right(const size_t & num) const;
 
     bool operator==(const LongInt & num) const;
     bool operator!=(const LongInt & num) const;
@@ -82,8 +83,7 @@ public:
     std::istream & operator>>(std::istream & is, LongInt & num);
 private:
     void remove_leading_zeros();         // 0001 -> 1
-    void add_leading_zeros(int num);
-    LongInt & insert_trailing_zeros(int num); // Essentially multiplying by 10 
+    void add_leading_zeros(const size_t & num);     // 1 -> 0001
 
     std::vector<int> digits_;
     bool neg_;

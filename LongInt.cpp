@@ -144,7 +144,6 @@ LongInt & LongInt::operator-=(const LongInt & num)
         return (*this) = LongInt(); 
     }
 
-
     bool neg = false; 
     bool rh_larger = false;
     if (neg_) {
@@ -158,7 +157,6 @@ LongInt & LongInt::operator-=(const LongInt & num)
             rh_larger = true;
         }
     }
-
   
     if (rh_larger) {
         LongInt rh = num;
@@ -205,7 +203,7 @@ LongInt & LongInt::operator-=(const LongInt & num)
 }
 
 
-LongInt & LongInt::operator*=(const LongInt & num) { return (*this) = karatsuba(num); }
+LongInt & LongInt::operator*=(const LongInt & num) { karatsuba(num, 1); return (*this); }
 LongInt & LongInt::operator/=(const LongInt & num) { return (*this) = fast_div(num); }
 LongInt & LongInt::operator%=(const LongInt & num) { return (*this) = (*this) - ((*this) / num) * num; }
 
@@ -295,61 +293,64 @@ LongInt LongInt::colm_mult(const LongInt & num) const
 
 LongInt LongInt::karatsuba(const LongInt & num) const
 {
-    if (digits_.size() == 1 || num.digits_.size() == 1) {
-        return colm_mult(num);
-    }
-
-    if (num == 0) return 0;
-    
-    LongInt rh(num);
-    LongInt lh(*this);
-
-    // Make them the same size
-    if (digits_.size() < rh.digits_.size()) {
-        lh.add_leading_zeros(rh.digits_.size() - lh.digits_.size());
-    } else {
-        rh.add_leading_zeros(lh.digits_.size() - rh.digits_.size());
-    }
-
-    int mid = lh.digits_.size() / 2; 
-
-    // Splitting the numbers up
-    std::vector<int> Xl, Xr;
-    std::vector<int> Yl, Yr;
-    for (int i = 0; i < mid; ++i) {
-        Xr.push_back(lh.digits_[i]);
-        Yr.push_back(rh.digits_[i]);
-    } 
-    LongInt xR(Xr);
-    LongInt yR(Yr);
-
-    for (int i = mid; i < lh.digits_.size(); ++i) {
-        Xl.push_back(lh.digits_[i]);
-        Yl.push_back(rh.digits_[i]);
-    }
-    LongInt xL(Xl);
-    LongInt yL(Yl);
-
-    LongInt t1 = LongInt(Xl).karatsuba(LongInt(Yl));
-    LongInt t2 = LongInt(Xr).karatsuba(LongInt(Yr));
-    LongInt t3 = (LongInt(Xl) + LongInt(Xr)).karatsuba((LongInt(Yl) + LongInt(Yr))) 
-        - t1 - t2;
-
-
-    LongInt ret = t1.insert_trailing_zeros((mid * 2)) + t3.insert_trailing_zeros(mid) +
-            t2;
-
-    ret.remove_leading_zeros();
-
-    if (neg_ != num.neg_) { 
-        ret.neg_ = true;
-    }
-
+    LongInt ret = (*this);
+    ret.karatsuba(num, 1);
     return ret;
 }
 
 
-LongInt LongInt::shift_left(const unsigned int & num) const
+void LongInt::karatsuba(const LongInt & num, bool hi)
+{
+    //quickly quit if simple 
+    if (digits_.size() == 1 || num.digits_.size() == 1) {
+        (*this) = colm_mult(num);
+        return;
+    }
+
+    if (num == 0 || (*this) == 0)
+    {
+        digits_.clear();
+        digits_.push_back(0);
+        return;
+    }
+
+    // Make them the same size
+    LongInt rh(num);
+    if (digits_.size() < rh.digits_.size()) {
+        add_leading_zeros(rh.digits_.size() - digits_.size());
+    } else {
+        rh.add_leading_zeros(digits_.size() - rh.digits_.size());
+    }
+
+    // Splitting the numbers up
+    size_t mid = digits_.size() / 2; 
+    std::vector<int> Xr;
+    std::vector<int> Yr;
+    for (size_t i = 0; i < mid; ++i) {
+        Xr.push_back(digits_[i]);
+        Yr.push_back(rh.digits_[i]);
+    } 
+    LongInt xR(Xr);
+    LongInt yR(Yr);
+    LongInt xL = (*this).shift_right(mid);
+    LongInt yL = num.shift_right(mid);
+
+    //karatsuba's algorithm
+    LongInt t1 = xL.karatsuba(yL);
+    LongInt t2 = xR.karatsuba(yR);
+    LongInt t3 = (xL + xR).karatsuba(yL + yR) - t1 - t2;
+
+    bool n = neg_;
+    (*this) = t1.shift_left((mid * 2)) + t3.shift_left(mid) + t2;
+    
+    remove_leading_zeros();
+    if (n != num.neg_) { 
+        neg_ = true;
+    }   
+}
+
+    
+LongInt LongInt::shift_left(const size_t & num) const
 {
     LongInt ret;
     ret.digits_.clear();
@@ -357,7 +358,7 @@ LongInt LongInt::shift_left(const unsigned int & num) const
     {
         ret.digits_.push_back(0);
     }
-    unsigned int s = digits_.size();
+    size_t s = digits_.size();
     for (unsigned int i = 0; i < s; ++i)
     {
         ret.digits_.push_back(digits_[i]);
@@ -385,7 +386,7 @@ LongInt LongInt::slow_div(const LongInt & num) const
 
 LongInt LongInt::fast_div(const LongInt & num) const
 {
-    unsigned int offset = (*this).digits_.size()-num.digits_.size();
+    size_t offset = (*this).digits_.size()-num.digits_.size();
     LongInt ret;
     LongInt numerator = (*this).pos();
     LongInt divisor = ((num).pos()).shift_left(offset);
@@ -409,12 +410,12 @@ LongInt LongInt::fast_div(const LongInt & num) const
 }
 
 
-LongInt LongInt::shift_right(const unsigned int & num) const
+LongInt LongInt::shift_right(const size_t & num) const
 {
     LongInt ret;
-    unsigned int s = digits_.size();
+    size_t s = digits_.size();
     ret.digits_.clear();
-    for (unsigned int i = num; i < s; ++i)
+    for (size_t i = num; i < s; ++i)
     {
         ret.digits_.push_back(digits_[i]);
     }
@@ -511,29 +512,11 @@ void LongInt::remove_leading_zeros()
 }
 
 
-void LongInt::add_leading_zeros(int num) 
+void LongInt::add_leading_zeros(const size_t & num) 
 {
-    for (int i = 0; i < num; ++i) {
+    for (size_t i = 0; i < num; ++i) {
         digits_.push_back(0);  
     }
-}
-
-
-LongInt & LongInt::insert_trailing_zeros(int num) 
-{
-    std::vector<int> new_digits; 
-    for (int i = 0; i < num; ++i) { 
-        new_digits.push_back(0);
-    }
-
-
-    for (int i = 0; i < digits_.size(); ++i) {
-        new_digits.push_back(digits_[i]);
-    }
-
-    digits_ = new_digits;
-
-    return (*this);
 }
 
 

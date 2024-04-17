@@ -182,5 +182,12 @@ int main() {
             std::cout << (a.fast_div(b)) << std::endl;
             break;
         }
+        case 23:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a *= b) << std::endl;
+            break;
+        }
     }
 }
