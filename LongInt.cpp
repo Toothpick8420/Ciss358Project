@@ -26,6 +26,18 @@ LongInt::LongInt(std::vector<int> digits, bool neg)
     : digits_(digits), neg_(neg) {}
 
 
+LongInt::LongInt(std::string input) 
+    : neg_(false)
+{
+    int start_idx = 0;
+    if (input[0] == '-') { neg_ = true; ++start_idx; }
+
+    for (int i = input.size() - 1; i >= start_idx; --i) {
+        digits_.push_back(input[i] - '0');
+    }
+}
+
+
 LongInt & LongInt::operator=(const LongInt & num) 
 {
     if (this == &num) return (*this);
@@ -552,15 +564,7 @@ std::istream & operator>>(std::istream & is, LongInt & num)
     std::string input;
     is >> input;
 
-    int start_idx = 0;
-    if (input[0] == '-') { num.neg_ = true; ++start_idx; }
-
-    num.digits_.clear();
-    for (int i = input.size() - 1; i >= start_idx; --i) 
-    {
-        // 48 is the offset of ascii numbers to 0 i.e "0" = 48
-        num.digits_.push_back(input[i] - '0');
-    }
+    num = LongInt(input);
 
     return is;
 }

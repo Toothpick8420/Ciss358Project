@@ -13,6 +13,7 @@ class LongInt
 public:
     LongInt(int num = 0);
     LongInt(std::vector<int> num, bool neg=false);
+    LongInt(std::string num);
 
     LongInt & operator=(const LongInt & num);
     LongInt & operator=(int num);
