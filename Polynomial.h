@@ -20,6 +20,8 @@ public:
     Polynomial & operator+=(const Polynomial & poly); // Requires the terms be sorted
     Polynomial & operator-=(const Polynomial & poly);
 
+    Polynomial slow_mult(const Polynomial & poly) const;
+
     void simplify();
 
     friend

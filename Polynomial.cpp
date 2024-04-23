@@ -14,108 +14,65 @@ Polynomial::Polynomial(std::string input)
     term t;
     bool coeff = true;
     bool neg   = false;
+    bool ended_on_x = false;
     for (auto & ch : input) {
-        // Cases of things we can just ignore
-        if (ch == ' ' && buff.empty()) continue;
-        if (ch == 'x' || ch == 'X')    continue;
-
-
-        // Carrot symbol is always followed by a power
-        if (ch == '^') {
-            // i.e x^5
-            // so no extra numbers were read in, coefficient is one
+        
+        if (ch == 'x' || ch == 'X') {
+            ended_on_x = true;
+            coeff = false;
             if (buff.empty()) {
                 t.coefficient = (neg ? -1 : 1);
             } else {
-                // There was numbers in the buffer to be coefficient, check if it 
-                // is negative and then set it to the coefficient
-                LongInt num(buff);
-                t.coefficient = (neg ? -num : num);
+                t.coefficient = (neg ? -LongInt(buff) : LongInt(buff));
+                buff.clear();
             }
-            buff.clear();
-            neg   = false; // assume exponents are positive
-            coeff = false;
-        }
-
-        else if (ch == '+') {
-            // No entered numbers can be assumed 1
-            if (buff.empty()) {
-                neg = false;
-            } else {
-                LongInt num(buff);
-                if (coeff) {
-                    t.coefficient = (neg ? -num : num);
-                } else {
-                    t.power = (neg ? -num : num);
-                    terms_.push_back(t);
-                    coeff = !coeff;
-                }
-            }
-            buff.clear();
-            neg = false; 
-        } 
-        else if (ch == '-') {
-            // If no entered numbers we can assume its a 1
-            if (buff.empty()) {
-                neg = true;
-            } else {
-                LongInt num(buff);
-                if (coeff) { 
-                    t.coefficient = (neg ? -num : num);
-                } else { 
-                    t.power = (neg ? -num : num);
-                    terms_.push_back(t);
-                    coeff = !coeff;
-                }
-            }
-            buff.clear();
-            neg = true;
-        } 
-
-        else if (ch == ' ') {
-            // If no entered numbers we can assume its a 1
-            if (buff.empty()) {
-                if (coeff) {
-                    t.coefficient = (neg ? -1 : 1);
-                } else {
-                    t.power = (neg ? -1 : 1);
-                    terms_.push_back(t);
-                }
-            } else {
-                LongInt num(buff);
-                if (coeff) {
-                    t.coefficient = (neg ? -num : num);
-                } else {
-                    t.power = (neg ? -num : num);
-                    terms_.push_back(t);
-                    coeff = !coeff;
-                }
-            }
-            buff.clear();
             neg = false;
         }
-
+        else if (ch == '-') { neg = true; ended_on_x = false; }
+        else if (ch == '+') { neg = false; ended_on_x = false; }
+        else if (ch == ' ') {
+            coeff = true;
+            if (buff.empty()) {
+                if (ended_on_x) {
+                    t.power = 1;
+                    terms_.push_back(t);
+                } else {
+                    continue;
+                }
+            } else {
+                t.power = (neg ? -LongInt(buff) : LongInt(buff));
+                terms_.push_back(t);
+                buff.clear();
+            }
+            ended_on_x = false;
+        }
+        else if (ch == '^') {
+            ended_on_x = false;
+            continue;
+        }
         else {
             buff.push_back(ch);
+            ended_on_x = false;
         }
     }
 
     if (!buff.empty()) {
-        LongInt num(buff);
-        if (coeff) {
-            t.coefficient = (neg ? -num : num);
+        if (ended_on_x) {
+            t.power = 1;
+        } 
+        else if (coeff){
+            t.coefficient = (neg ? -LongInt(buff) : LongInt(buff));
             t.power = 0;
-        }
-        else {
-            t.power = (neg ? -num : num);
+        } else {
+            t.power = (neg ? -LongInt(buff) : LongInt(buff));
         }
         terms_.push_back(t);
     }
-    
+
     simplify();
 
     // sort it by term
-    std::sort(terms_.begin(), terms_.end(), [](term a, term b) {return a.power < b.power; });
+    std::sort(terms_.begin(), terms_.end(), [](term a, term b) {return a.power > b.power; });
 }
 
 
@@ -192,24 +149,40 @@ Polynomial & Polynomial::operator-=(const Polynomial & poly)
 }
 
 
+// Slow n^2 polynomial multiplication for testing
+Polynomial Polynomial::slow_mult(const Polynomial & poly) const 
+{
+    // Make more efficient maybe
+    Polynomial ret;
+
+    for (auto & t1 : terms_) {
+        for (auto & t2: poly.terms_) {
+            ret.terms_.push_back({t1.coefficient * t2.coefficient, t1.power + t2.power});
+        }
+    }
+
+    ret.simplify(); 
+    return ret;
+}
+
+
 void Polynomial::simplify()
 {
     std::sort(terms_.begin(), terms_.end(), [](term a, term b) { return a.power > b.power; });
 
     std::vector<term>::iterator it = terms_.begin();
-
+   
     while(it != terms_.end() - 1) {
         // Remove terms with a 0 coefficient
         if (it->coefficient == 0) {
             terms_.erase(it);  
             // Reloop to check that its within the it != end() - 1
-            // to avoid out of bounds errors
-            continue; 
-            
+            // to avoid out of bounds errors 
+            continue;
         }
         // Since its sorted the value to the right will be >=
         // and if they are == combine the terms
-        else if (it->power == (it + 1)->power) {
+        if (it->power == (it + 1)->power) {
             it->coefficient += (it + 1)->coefficient; // combine coefficient
             terms_.erase((it + 1));                   // remove the extra term
             // No need to increment the iterator since erasing the value effectivly 
@@ -235,6 +208,7 @@ std::ostream & operator<<(std::ostream & os, const Polynomial & poly)
         // Prettier printing so if its a negative term, change it to positive
         // and make it subtract, the default is addition basically
         term t = poly.terms_[i];
+
         if (t.coefficient.is_negative()) {
             os << " - ";
             t.coefficient = t.coefficient.pos();

@@ -6,7 +6,7 @@
 
 int main() {
 
-    int option=0;
+    int option=12;
     //std::cin >> option;
 
     switch (option) 
