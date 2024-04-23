@@ -6,8 +6,8 @@
 
 int main() {
 
-    int option=12;
-    //std::cin >> option;
+    int option;
+    std::cin >> option;
 
     switch (option) 
     {
@@ -194,6 +194,14 @@ int main() {
             LongInt a, b;
             std::cin >> a >> b;
             std::cout << (a *= b) << std::endl;
+            break;
+        }
+        case 25:
+        {
+            LongInt a, b;
+            std::cin >> a >> b;
+            std::cout << (a.pow(b)) << std::endl;
+            break;
         }
     }
 }

@@ -434,6 +434,17 @@ LongInt LongInt::shift_right(const size_t & num) const
 }
 
 
+LongInt LongInt::pow(const LongInt & pow) const {
+    LongInt ret(*this);
+
+    for (LongInt i = 0; i < pow; ++i) {
+        ret *= (*this);
+    }
+
+    return ret;
+}
+
+
 bool LongInt::operator==(const LongInt & num) const 
 {
     // Kind of ugly with 3 return statements but I think its better than a lot

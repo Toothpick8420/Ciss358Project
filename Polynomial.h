@@ -11,6 +11,11 @@ struct term {
     LongInt power = 0;
 };
 
+struct complex {
+    LongInt real = 0;
+    LongInt imaginary = 0;
+};
+
 
 class Polynomial 
 {
@@ -29,7 +34,12 @@ public:
     friend 
     std::istream & operator>>(std::istream & is, Polynomial & poly);
 private:
+    
     std::vector<term> terms_;
 };
+
+std::vector<term> FFT(std::vector<term> poly);
+std::vector<term> IFFT(std::vector<term> poly);
+complex operator*(complex c, LongInt l);
 
 #endif

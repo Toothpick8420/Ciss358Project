@@ -63,6 +63,8 @@ public:
     LongInt fast_div(const LongInt & num) const;
     LongInt shift_right(const size_t & num) const;
 
+    LongInt pow(const LongInt & pow) const;
+
     bool operator==(const LongInt & num) const;
     bool operator!=(const LongInt & num) const;
     bool operator< (const LongInt & num) const;

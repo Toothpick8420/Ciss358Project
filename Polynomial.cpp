@@ -1,5 +1,6 @@
 // File: Polynomial.cpp
 #include <algorithm>
+#include <cmath>
 #include "Polynomial.h"
 
 Polynomial::Polynomial(std::string input)
