@@ -11,6 +11,7 @@
 Polynomial tau(const LongInt & t);
 
 int main() {
+    std::cout << "Enter n for the tau funciton: ";
     LongInt n = 0;
     std::cin >> n;
 
