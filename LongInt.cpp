@@ -158,7 +158,7 @@ LongInt & LongInt::operator-=(const LongInt & num)
 
     bool neg = false; 
     bool rh_larger = false;
-    if (this->pos() < num) {
+    if (this->pos() < num.pos()) {
         rh_larger = true; 
     }
 

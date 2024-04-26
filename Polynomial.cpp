@@ -210,7 +210,6 @@ Polynomial Polynomial::pow(const LongInt & p) const {
 LongInt Polynomial::eval(const LongInt & x) const {
     LongInt ret;
     for (auto & t : terms_) {
-        std::cout << t.coefficient  << " " << x.pow(t.power) << std::endl;
         ret += (t.coefficient * (x.pow(t.power)));
     }
 

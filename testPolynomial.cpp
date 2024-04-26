@@ -5,7 +5,7 @@
 
 int main() 
 {
-    int option = 5;
+    int option = 3;
 //    std::cin >> option;
 
     switch (option) 
