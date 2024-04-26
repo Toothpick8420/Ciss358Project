@@ -437,7 +437,7 @@ LongInt LongInt::shift_right(const size_t & num) const
 LongInt LongInt::pow(const LongInt & pow) const {
     LongInt ret(*this);
 
-    for (LongInt i = 0; i < pow; ++i) {
+    for (LongInt i = 1; i < pow; ++i) {
         ret *= (*this);
     }
 
@@ -537,6 +537,19 @@ void LongInt::add_leading_zeros(const size_t & num)
     for (size_t i = 0; i < num; ++i) {
         digits_.push_back(0);  
     }
+}
+
+
+std::string LongInt::to_string() const {
+    std::string ret = "";
+    if (neg_) {
+        ret += "-";
+    }
+    // FIXME: size_t breaks this
+    for (int i = (digits_.size() - 1); i >= 0; --i) {
+        ret += (char)(digits_[i] + 48);
+    }
+    return ret;
 }
 
 

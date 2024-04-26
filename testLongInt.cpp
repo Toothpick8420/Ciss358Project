@@ -7,7 +7,8 @@
 int main() {
 
     int option;
-    std::cin >> option;
+    //std::cin >> option;
+    option = 12;
 
     switch (option) 
     {
@@ -201,6 +202,13 @@ int main() {
             LongInt a, b;
             std::cin >> a >> b;
             std::cout << (a.pow(b)) << std::endl;
+            break;
+        }
+        case 26: 
+        {
+            LongInt a;
+            std::cin >> a;
+            std::cout << (a.to_string()) << std::endl;
             break;
         }
     }

@@ -1,5 +1,10 @@
 
 
+tau:
+	g++ LongInt.cpp Polynomial.cpp main.cpp	-fsanitize=address
+t:	
+	g++ LongInt.cpp Polynomial.cpp main.cpp -fsanitize=address
+
 polynomial:
 	g++ LongInt.cpp Polynomial.cpp testPolynomial.cpp -fsanitize=address
 p:

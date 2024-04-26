@@ -28,6 +28,9 @@ public:
     Polynomial slow_mult(const Polynomial & poly) const;
 
     void simplify();
+    Polynomial pow(const LongInt & pow) const;
+    LongInt eval(const LongInt & x) const;
+ 
 
     friend
     std::ostream & operator<<(std::ostream & os, const Polynomial & poly);

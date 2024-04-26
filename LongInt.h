@@ -79,6 +79,7 @@ public:
     bool operator> (int num) const;
     bool operator>=(int num) const;
 
+    std::string to_string() const;
 
     friend
     std::ostream & operator<<(std::ostream & os, const LongInt & num);

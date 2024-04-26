@@ -5,7 +5,7 @@
 
 int main() 
 {
-    int option = 4;
+    int option = 5;
 //    std::cin >> option;
 
     switch (option) 
@@ -38,6 +38,22 @@ int main()
             std::cout << p << std::endl;
             std::cout << q << std::endl;
             std::cout << (p.slow_mult(q)) << std::endl;
+            break;
+        }
+        case 4:
+        {
+            Polynomial p;
+            LongInt q;
+            std::cin >> p >> q;
+            std::cout << (p.eval(q)) << std::endl;
+            break;
+        }
+        case 5:
+        {
+            Polynomial p;
+            LongInt q;
+            std::cin >> p >> q;
+            std::cout << (p.pow(q)) << std::endl;
             break;
         }
     }

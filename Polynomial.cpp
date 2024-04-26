@@ -196,6 +196,28 @@ void Polynomial::simplify()
 }
 
 
+// TODO: Make more memory conservative
+Polynomial Polynomial::pow(const LongInt & p) const {
+    Polynomial ret(*this);
+    for (LongInt i = 1; i < p; ++i) {
+        ret = ret.slow_mult((*this));
+    }
+
+    return ret;
+}
+
+
+LongInt Polynomial::eval(const LongInt & x) const {
+    LongInt ret;
+    for (auto & t : terms_) {
+        std::cout << t.coefficient  << " " << x.pow(t.power) << std::endl;
+        ret += (t.coefficient * (x.pow(t.power)));
+    }
+
+    return ret;
+}
+
+
 std::ostream & operator<<(std::ostream & os, const Polynomial & poly) 
 {
     if (poly.terms_.size() <= 0) return os;
